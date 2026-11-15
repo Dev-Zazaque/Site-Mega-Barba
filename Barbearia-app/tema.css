@@ -1,0 +1,152 @@
+/* ==========================================================
+   MEGA BARBA • Design system compartilhado (index + painel)
+   Paleta: grafite fosco + ouro envelhecido #E5303F
+   Fonte: Plus Jakarta Sans (carregada no <head> de cada página)
+   ========================================================== */
+:root { --ouro: #E5303F; --ouro-esc: #B71C2B; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-attachment: fixed;
+  /* brilho dourado no topo + toque azul no canto (cores da logo) */
+  background-image:
+    radial-gradient(900px 500px at 50% -8%, rgba(212, 175, 55, 0.10), transparent 60%),
+    radial-gradient(600px 400px at 100% 100%, rgba(29, 79, 159, 0.08), transparent 60%);
+}
+h1, h2 { letter-spacing: -0.02em; }
+:focus-visible { outline: 2px solid var(--ouro); outline-offset: 2px; }
+
+
+/* ---- Card interativo: sobe, ganha brilho dourado, afunda ao clicar ---- */
+.card { transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.card:hover { transform: translateY(-2px); border-color: rgba(229,48,63,.55); box-shadow: 0 14px 34px -12px rgba(229,48,63,.25); }
+.card:active { transform: scale(.985); }
+
+/* ---- Botão principal dourado ---- */
+.btn-gold {
+  background: linear-gradient(135deg, #F25461, #E5303F 45%, #B71C2B);
+  box-shadow: 0 8px 24px -8px rgba(229,48,63,.55);
+  transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+}
+.btn-gold:hover { filter: brightness(1.07); box-shadow: 0 12px 30px -8px rgba(229,48,63,.7); }
+.btn-gold:active { transform: scale(.98); }
+
+/* ---- Etiqueta (duração, status) e indicadores do dashboard ---- */
+.chip { display: inline-block; font-size: .68rem; font-weight: 600; padding: .15rem .6rem; border-radius: 999px;
+  background: rgba(229,48,63,.1); color: #F25461; border: 1px solid rgba(229,48,63,.25); }
+.kpi-l { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; font-weight: 600; }
+.kpi-v { font-size: 1.5rem; font-weight: 800; margin-top: .25rem; }
+
+/* ---- Animações: entrada escalonada das telas, check desenhado, poste de barbeiro ---- */
+.tela > * { animation: subir .5s cubic-bezier(.2,.8,.2,1) both; }
+.tela > *:nth-child(2) { animation-delay: .06s; }
+.tela > *:nth-child(3) { animation-delay: .12s; }
+.tela > *:nth-child(4) { animation-delay: .18s; }
+@keyframes subir { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.pop { animation: pop .45s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes pop { from { transform: scale(.5); opacity: 0; } to { transform: none; opacity: 1; } }
+.draw { stroke-dasharray: 30; stroke-dashoffset: 30; animation: draw .6s .25s ease forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.pole { background: repeating-linear-gradient(-45deg,#d62839 0 8px,#fff 8px 16px,#1d4f9f 16px 24px); background-size: 34px 34px; animation: rola 1s linear infinite; }
+@keyframes rola { to { background-position: 34px 0; } }
+
+/* Respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* ---- v3: loading elegante, padrões sem fotos, cartão fidelidade ---- */
+.skel { background: linear-gradient(90deg, rgba(255,255,255,.04) 25%, rgba(255,255,255,.11) 50%, rgba(255,255,255,.04) 75%); background-size: 200% 100%; animation: brilho 1.2s linear infinite; }
+@keyframes brilho { to { background-position: -200% 0; } }
+.spin { display: inline-block; width: 1rem; height: 1rem; border: 2px solid rgba(9,9,11,.25); border-top-color: #09090b; border-radius: 50%; animation: gira .7s linear infinite; vertical-align: -3px; }
+@keyframes gira { to { transform: rotate(360deg); } }
+
+/* Fundo do hero 100% em CSS: ouro + listras finas + poste de barbeiro esmaecido */
+.hero-pattern { background: radial-gradient(420px 320px at 85% 15%, rgba(229,48,63,.22), transparent 70%),
+  repeating-linear-gradient(-45deg, rgba(229,48,63,.07) 0 2px, transparent 2px 14px), linear-gradient(160deg, #1b1b1f, #0a0a0b 70%); }
+.hero-pattern::after { content: ""; position: absolute; right: -14px; top: -10%; width: 56px; height: 120%; transform: rotate(12deg); border-radius: 28px; opacity: .32;
+  background: repeating-linear-gradient(-45deg, #d62839 0 14px, #fff 14px 28px, #1d4f9f 28px 42px);
+  -webkit-mask-image: linear-gradient(#000 35%, transparent); mask-image: linear-gradient(#000 35%, transparent); }
+.gold-text { background: linear-gradient(135deg, #FF8A94, #E5303F, #B71C2B); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.monograma { background: linear-gradient(145deg, #2b2b30, #111114); border: 2px solid #E5303F; color: #F25461;
+  box-shadow: 0 0 0 4px rgba(229,48,63,.12), inset 0 0 18px rgba(229,48,63,.15); }
+.stamp { width: 1.7rem; height: 1.7rem; border-radius: 999px; border: 1.5px dashed rgba(229,48,63,.45); }
+.stamp.on { border-style: solid; border-color: #E5303F; background: linear-gradient(135deg, #F25461, #B71C2B); box-shadow: 0 0 12px rgba(229,48,63,.35); display: flex; align-items: center; justify-content: center; }
+.stamp.on::after { content: "✓"; color: #09090b; font-size: .8rem; font-weight: 800; }
+
+/* ==========================================================
+   v4 • LIQUID GLASS + LANDING
+   .glass  = vidro líquido simples (cards, inputs, barras)
+   .liquid = vidro líquido completo (brilho que segue o dedo/mouse + borda de luz)
+   ========================================================== */
+.glass, .liquid {
+  background: linear-gradient(135deg, rgba(255,255,255,.13), rgba(255,255,255,.04));
+  -webkit-backdrop-filter: blur(18px) saturate(1.8); backdrop-filter: blur(18px) saturate(1.8);
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: 0 10px 34px -10px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(255,255,255,.07);
+}
+.liquid { position: relative; isolation: isolate; }
+.liquid::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: .75; transition: opacity .3s;
+  background: radial-gradient(200px circle at var(--mx, 25%) var(--my, 0%), rgba(255,255,255,.3), transparent 62%); }
+.liquid:hover::before { opacity: 1; }
+.liquid::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,.7), rgba(255,255,255,0) 35%, rgba(255,255,255,0) 65%, rgba(255,255,255,.4));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.liquid-cta { background: linear-gradient(135deg, rgba(242,84,97,.55), rgba(229,48,63,.3)); color: #fff; text-shadow: 0 1px 8px rgba(0,0,0,.4);
+  transition: transform .2s, box-shadow .3s; animation: pulso 3s ease-in-out infinite; }
+.liquid-cta:hover { transform: translateY(-2px) scale(1.03); }
+.liquid-cta:active { transform: scale(.97); }
+@keyframes pulso { 50% { box-shadow: 0 10px 34px -10px rgba(0,0,0,.55), 0 0 28px rgba(229,48,63,.45), inset 0 1px 0 rgba(255,255,255,.4); } }
+
+/* Foto de fundo com zoom lento + véu escuro */
+
+.font-display { font-family: "Playfair Display", Georgia, serif; }
+.ch { display: inline-block; opacity: 0; transform: translateY(40px) rotateX(-70deg); animation: letra .9s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes letra { to { opacity: 1; transform: none; } }
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* Objetos decorativos: .par = paralaxe do mouse, .flt = flutuar */
+.par { position: absolute; pointer-events: none; transform: translate3d(calc(var(--px, 0) * var(--d, 10) * 1px), calc(var(--py, 0) * var(--d, 10) * 1px), 0); }
+.flt { animation: flutua 6s ease-in-out infinite alternate; }
+@keyframes flutua { from { transform: translateY(-10px) rotate(var(--r0, -2deg)); } to { transform: translateY(10px) rotate(var(--r1, 2deg)); } }
+
+/* Poste de barbeiro giratório (cilindro de vidro com tampas cromadas) */
+.poste { width: 46px; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 20px 24px rgba(0,0,0,.6)); }
+.poste .globo { width: 30px; height: 30px; border-radius: 50%; margin-bottom: -4px; background: radial-gradient(circle at 35% 30%, #fff, #d8d8de 60%, #9a9aa2); }
+.poste .tampa { width: 46px; height: 14px; border-radius: 7px; background: linear-gradient(90deg, #6b6b70, #f2f2f4 35%, #9b9ba0 60%, #4b4b50); }
+.poste .tubo { width: 36px; height: 190px; position: relative; background: repeating-linear-gradient(-45deg, #d62839 0 14px, #fff 14px 28px, #1d4f9f 28px 42px); background-size: 59.4px 59.4px; animation: giro 2.2s linear infinite; }
+@keyframes giro { to { background-position: 0 59.4px; } }
+.poste .tubo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.55), rgba(255,255,255,.35) 28%, rgba(255,255,255,0) 45%, rgba(0,0,0,.25) 80%, rgba(0,0,0,.6)); }
+
+/* ==========================================================
+   v5 • FUNDO MESCLADO + HERO SÓBRIO (paleta: branco, cinza, preto, vermelho, azul)
+   Camadas: foto (em cima, esmaece) + ferramentas em mármore (embaixo, como na referência)
+   ========================================================== */
+#fundo .img { position: absolute; inset: -4% -4% 20% -4%; background: url(fotos/fundo.jpg) center / cover; filter: brightness(.8) saturate(1.05);
+  animation: kb 28s ease-in-out infinite alternate; transition: opacity .6s;
+  -webkit-mask-image: linear-gradient(#000 45%, transparent 95%); mask-image: linear-gradient(#000 45%, transparent 95%); }
+@keyframes kb { from { transform: scale(1.04); } to { transform: scale(1.14) translate(-1.5%, 1%); } }
+#fundo.calmo .img { opacity: .4; } #fundo.calmo .ferr { opacity: .5; }   /* painel e fluxo de agendamento: fundo mais discreto */
+
+
+/* ==========================================================
+   v6 • Hero editorial: emblema + título + frase animada + barra de informações
+   ========================================================== */
+#fundo .ferr { position: absolute; left: 0; right: 0; bottom: 0; height: min(52vh, 34vw); transition: opacity .6s;
+  background: url(fotos/ferramentas.jpg) center bottom / cover no-repeat;
+  -webkit-mask-image: linear-gradient(to top, #000 70%, transparent); mask-image: linear-gradient(to top, #000 70%, transparent); }
+#fundo .veu { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(9,9,11,.55), rgba(9,9,11,.1) 35%, rgba(9,9,11,.05) 70%, rgba(9,9,11,.25)),
+  radial-gradient(ellipse at 50% 38%, rgba(9,9,11,.4), transparent 60%); }
+
+.hero-emblema { filter: drop-shadow(0 14px 34px rgba(0,0,0,.65)); animation: respira 5s ease-in-out infinite alternate; }
+@keyframes respira { to { filter: drop-shadow(0 14px 34px rgba(0,0,0,.65)) drop-shadow(0 0 22px rgba(229,48,63,.35)); } }
+.faixa-pole { width: min(200px, 50vw); height: 6px; border-radius: 3px; opacity: .95;
+  background: repeating-linear-gradient(-45deg, #d62839 0 6px, #fff 6px 12px, #2F6FD0 12px 18px); background-size: 25.46px 25.46px;
+  animation: listra 1.4s linear infinite, aparece 1s .8s both; }
+@keyframes listra { to { background-position: 25.46px 0; } }
+@keyframes aparece { from { transform: scaleX(0); opacity: 0; } }
+.lema { font-family: "Playfair Display", Georgia, serif; font-style: italic; font-size: clamp(1.2rem, 3.2vw, 1.75rem); line-height: 1.45; color: #e4e4e7; text-shadow: 0 2px 18px rgba(0,0,0,.7); }
+.lema .w { display: inline-block; opacity: 0; filter: blur(8px); transform: translateY(8px); animation: palavra .7s ease forwards; }
+.lema .dest { color: #fff; font-weight: 700; text-decoration: underline; text-decoration-color: #E5303F; text-decoration-thickness: 2px; text-underline-offset: 6px; }
+@keyframes palavra { to { opacity: 1; filter: none; transform: none; } }
