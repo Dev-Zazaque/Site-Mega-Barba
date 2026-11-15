@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mega Barba - Agendamento Online</title>
+    <link rel="icon" href="fotos/logo.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#0a0a0b" />
+    <link rel="apple-touch-icon" href="icons/icon-180.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="tema.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{colors:{brand:{DEFAULT:"#E5303F",dark:"#B71C2B"},azul:"#2F6FD0"}}}}</script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+    </head>
+  <body class="bg-zinc-950 text-zinc-100 min-h-dvh flex flex-col">
+    <!-- Fundo: sua foto + zoom lento + véu escuro -->
+    <div id="fundo" class="fixed inset-0 -z-10"><div class="img"></div><div class="ferr"></div><div class="veu"></div></div>
+
+    <!-- Logo (emblema) definida uma vez e reutilizada com <use href="#emblema"> -->
+    <svg width="0" height="0" class="absolute" aria-hidden="true"><symbol id="emblema" viewBox="0 0 240 240">
+        <defs>
+          <pattern id="em-lis" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><rect width="10" height="3.4" fill="#d62839"/><rect y="3.4" width="10" height="3.3" fill="#fff"/><rect y="6.7" width="10" height="3.3" fill="#2F6FD0"/></pattern>
+          <linearGradient id="em-faixa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a3a3aa"/><stop offset=".5" stop-color="#70707a"/><stop offset="1" stop-color="#55555d"/></linearGradient>
+          <path id="em-cima" d="M 48 120 A 72 72 0 0 1 192 120"/>
+          <path id="em-baixo" d="M 32 120 A 88 88 0 0 0 208 120"/>
+        </defs>
+        <circle cx="120" cy="120" r="117" fill="#0b0b0d" stroke="#fff" stroke-width="2.5"/>
+        <circle cx="120" cy="120" r="108" fill="none" stroke="#fff" stroke-opacity=".25"/>
+        <rect x="110" y="3" width="20" height="26" rx="4" fill="url(#em-lis)" stroke="#e4e4e7" stroke-width="1.6"/><rect x="107" y="1" width="26" height="5" rx="2.5" fill="#cfcfd4"/>
+        <rect x="110" y="214" width="20" height="23" rx="4" fill="url(#em-lis)" stroke="#e4e4e7" stroke-width="1.6"/><rect x="107" y="234" width="26" height="5" rx="2.5" fill="#cfcfd4"/>
+        <text font-family="Oswald,Arial,sans-serif" font-size="15" font-weight="500" letter-spacing="5" fill="#fff"><textPath href="#em-cima" startOffset="50%" text-anchor="middle">BARBEARIA</textPath></text>
+        <text font-family="Oswald,Arial,sans-serif" font-size="14" font-weight="500" letter-spacing="4.5" fill="#fff"><textPath href="#em-baixo" startOffset="50%" text-anchor="middle">TRADICIONAL</textPath></text>
+        <g transform="translate(120 72)" stroke="#fff" fill="none" stroke-width="1.7" stroke-linecap="round"><circle cx="-6" cy="7" r="3.6"/><circle cx="6" cy="7" r="3.6"/><path d="M-4 4 L5 -9 M4 4 L-5 -9"/></g>
+        <path d="M12 100 L42 100 L42 146 L12 146 L23 123 Z" fill="#45454c"/><path d="M228 100 L198 100 L198 146 L228 146 L217 123 Z" fill="#45454c"/>
+        <rect x="34" y="92" width="172" height="48" fill="url(#em-faixa)"/><rect x="34" y="92" width="172" height="2" fill="#fff" opacity=".35"/>
+        <text x="120" y="127" text-anchor="middle" font-family="Oswald,Arial,sans-serif" fill="#fff"><tspan font-size="15" font-weight="500" letter-spacing="3">MEGA </tspan><tspan font-size="31" font-weight="700" letter-spacing="1">BARBA</tspan></text>
+        <path d="M120 162 C128 155 138 153 146 157 C152 160 158 159 164 153 C164 165 154 173 142 171 C134 170 127 166 120 162 Z M120 162 C112 155 102 153 94 157 C88 160 82 159 76 153 C76 165 86 173 98 171 C106 170 113 166 120 162 Z" fill="#fff"/>
+      </symbol></svg>
+
+    <!-- ========== LANDING (primeira tela) ========== -->
+    <div id="tela-inicio" class="relative">
+      <nav class="fixed top-3 inset-x-3 z-30 mx-auto max-w-3xl liquid rounded-full pl-4 pr-2 py-2 flex items-center justify-between">
+        <span class="flex items-center gap-2.5 shrink-0"><svg class="h-10 w-10" role="img" aria-label="Mega Barba"><use href="#emblema"/></svg><span class="leading-none text-left"><span class="block font-display font-bold tracking-[.12em] text-[15px] text-white">MEGA BARBA</span><span class="block text-[9px] tracking-[.3em] uppercase text-zinc-400 mt-1">Barbearia Tradicional</span></span></span>
+        <div class="hidden sm:flex gap-6 text-xs text-zinc-200"><a href="#servicos" class="hover:text-white">Serviços</a><a href="#equipe" class="hover:text-white">Equipe</a><a href="#avaliacoes" class="hover:text-white">Avaliações</a><a href="#onde" class="hover:text-white">Onde estamos</a></div>
+        <button type="button" onclick="ir('tela-servico','Escolha o serviço desejado',1)" class="liquid liquid-cta rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-wider">Agendar</button>
+      </nav>
+
+      <section class="relative min-h-dvh flex flex-col items-center justify-center text-center px-6 pt-28 pb-20 overflow-hidden">
+        <div class="relative z-10 flex flex-col items-center w-full">
+          <svg class="hero-emblema w-28 h-28 sm:w-36 sm:h-36" role="img" aria-label="Mega Barba - Barbearia Tradicional"><use href="#emblema"/></svg>
+          <h1 class="font-display font-bold tracking-[.06em] text-[clamp(2.6rem,9vw,6.2rem)] leading-none mt-6 [text-shadow:0_4px_30px_rgba(0,0,0,.6)]" data-split>MEGA BARBA</h1>
+          <div class="faixa-pole mt-5"></div>
+          <p class="lema max-w-md mt-5" data-words>O estilo que você quer, nas mãos de quem você confia.</p>
+          <div class="flex flex-wrap justify-center gap-3 mt-8">
+            <button type="button" onclick="ir('tela-servico','Escolha o serviço desejado',1)" class="liquid liquid-cta rounded-full px-9 py-4 text-sm font-bold uppercase tracking-widest">Agendar horário</button>
+            <button type="button" onclick="abrirMeus()" class="liquid rounded-full px-7 py-4 text-sm font-semibold">Já tenho agendamento</button>
+          </div>
+          <button type="button" id="btn-instalar" class="hidden text-sm text-zinc-300 underline py-3 min-h-11 mt-2">Instalar o app no celular</button>
+          <p id="dica-ios" class="hidden text-xs text-zinc-400 max-w-xs mt-2">No iPhone: toque em Compartilhar e depois em "Adicionar à Tela de Início".</p>
+          <div class="liquid rounded-2xl mt-10 grid grid-cols-3 divide-x divide-white/10 text-center w-full max-w-xl">
+            <div class="py-3 px-2"><p class="text-lg font-bold">5,0 <span class="text-brand">★</span></p><p class="text-[11px] text-zinc-400">39 avaliações no Google</p></div>
+            <div class="py-3 px-2"><p class="text-lg font-bold">Ter a sáb</p><p class="text-[11px] text-zinc-400">09h às 19h</p></div>
+            <div class="py-3 px-2"><p class="text-lg font-bold">Cachambi</p><p class="text-[11px] text-zinc-400">R. Cachambi, 228A</p></div>
+          </div>
+        </div>
+        <div class="hidden sm:flex absolute right-5 top-1/2 -translate-y-1/2 flex-col gap-2 z-10">
+          <a href="https://www.instagram.com/mega_barba/" target="_blank" rel="noopener" aria-label="Instagram" class="liquid w-11 h-11 rounded-full flex items-center justify-center"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg></a>
+          <a href="https://www.google.com/maps/search/?api=1&query=R.+Cachambi,+228A+-+Cachambi,+Rio+de+Janeiro" target="_blank" rel="noopener" aria-label="Como chegar" class="liquid w-11 h-11 rounded-full flex items-center justify-center"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>
+          <a href="tel:+5521999496224" aria-label="Ligar" class="liquid w-11 h-11 rounded-full flex items-center justify-center"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg></a>
+        </div>
+      </section>
+
+      <section id="servicos" class="max-w-2xl mx-auto px-5 pt-20">
+        <p class="reveal kpi-l text-brand">Serviços</p>
+        <h2 class="reveal font-display text-4xl font-bold mt-2">Tradição no corte, precisão na barba.</h2>
+        <div id="servicos-home" class="space-y-3 mt-8"><div class="skel h-20 rounded-2xl"></div><div class="skel h-20 rounded-2xl"></div></div>
+      </section>
+
+      <section id="equipe" class="max-w-4xl mx-auto px-5 pt-20">
+        <p class="reveal kpi-l text-brand">Equipe</p>
+        <h2 class="reveal font-display text-4xl font-bold mt-2">Quem cuida do seu estilo.</h2>
+        <div id="equipe-home" class="grid sm:grid-cols-2 gap-4 mt-8"></div>
+      </section>
+
+      <section id="avaliacoes" class="max-w-4xl mx-auto px-5 py-20">
+        <p class="reveal text-xs tracking-[.3em] uppercase text-brand">Avaliações no Google • 5,0</p>
+        <h2 class="reveal font-display text-4xl font-bold mt-2">Quem passa por aqui, recomenda.</h2>
+        <div class="grid md:grid-cols-3 gap-4 mt-8">
+          <figure class="liquid reveal rounded-3xl p-5 flex flex-col gap-3"><span class="text-brand tracking-widest">★★★★★</span><blockquote class="text-sm text-zinc-100 leading-relaxed">“Wallace e Alex foram os únicos barbeiros que conseguiram acertar o corte do meu filho… Ótimo atendimento, preço e qualidade.”</blockquote><figcaption class="text-xs text-zinc-400 mt-auto">Débora E. • Google</figcaption></figure>
+          <figure class="liquid reveal rounded-3xl p-5 flex flex-col gap-3"><span class="text-brand tracking-widest">★★★★★</span><blockquote class="text-sm text-zinc-100 leading-relaxed">“Barba parece que foi feita na trena, ficou na régua, top!”</blockquote><figcaption class="text-xs text-zinc-400 mt-auto">Carbonocapoeira • Google</figcaption></figure>
+          <figure class="liquid reveal rounded-3xl p-5 flex flex-col gap-3"><span class="text-brand tracking-widest">★★★★★</span><blockquote class="text-sm text-zinc-100 leading-relaxed">“Local família, funcionários rápido no serviço, lugar bem limpo.”</blockquote><figcaption class="text-xs text-zinc-400 mt-auto">Aldeir S. • Local Guide</figcaption></figure>
+        </div>
+      </section>
+
+      <section id="onde" class="max-w-4xl mx-auto px-5 pb-20">
+        <div class="liquid reveal rounded-3xl p-6 sm:p-8 grid sm:grid-cols-3 gap-6">
+          <div><p class="kpi-l">Endereço</p><p class="text-sm mt-2">R. Cachambi, 228A<br />Cachambi, Rio de Janeiro – RJ<br />CEP 21751-180</p><p class="text-xs text-zinc-400 mt-1">Salão MegaLu</p></div>
+          <div><p class="kpi-l">Horário</p><p class="text-sm mt-2">Terça a sábado<br />09h às 19h</p><p class="text-xs text-zinc-400 mt-1">Fechado domingo e segunda</p></div>
+          <div><p class="kpi-l">Contato</p><p class="text-sm mt-2">(21) 99949-6224</p><p class="text-xs text-zinc-400 mt-1">@mega_barba</p></div>
+          <div class="sm:col-span-3 flex flex-wrap gap-3">
+            <a href="https://www.google.com/maps/search/?api=1&query=R.+Cachambi,+228A+-+Cachambi,+Rio+de+Janeiro" target="_blank" rel="noopener" class="liquid liquid-cta rounded-full px-5 py-3 text-xs font-bold uppercase tracking-wider flex items-center gap-2"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Como chegar</a>
+            <a href="tel:+5521999496224" class="liquid rounded-full px-5 py-3 text-xs font-bold uppercase tracking-wider flex items-center gap-2"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg> Ligar</a>
+            <a href="https://www.instagram.com/mega_barba/" target="_blank" rel="noopener" class="liquid rounded-full px-5 py-3 text-xs font-bold uppercase tracking-wider flex items-center gap-2"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg> Instagram</a>
+          </div>
+        </div>
+        <p class="text-center text-xs text-zinc-500 mt-8">© Mega Barba • Barbearia Tradicional • Cachambi, RJ</p>
+      </section>
+    </div>
+
+    <header id="cabecalho" class="hidden glass sticky top-0 z-20 px-4 py-3 rounded-none border-x-0 border-t-0">
+      <div class="max-w-lg mx-auto flex items-center gap-3">
+        <span class="flex items-center gap-2.5 shrink-0"><svg class="h-10 w-10" role="img" aria-label="Mega Barba"><use href="#emblema"/></svg><span class="leading-none text-left"><span class="block font-display font-bold tracking-[.12em] text-[15px] text-white">MEGA BARBA</span><span class="block text-[9px] tracking-[.3em] uppercase text-zinc-400 mt-1">Barbearia Tradicional</span></span></span>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs text-zinc-300 truncate" id="subtitulo-topo">Escolha o serviço desejado</p>
+          <div class="h-1.5 bg-zinc-800 rounded-full mt-1.5 overflow-hidden"><div id="barra" class="pole h-full transition-all duration-300 rounded-full" style="width: 25%"></div></div>
+        </div>
+      </div>
+    </header>
+
+    <main id="area-app" class="hidden max-w-lg w-full mx-auto p-4 flex-1 flex flex-col justify-center">
+      <!-- 1: SERVIÇO -->
+      <div id="tela-servico" class="tela hidden space-y-4">
+        <div><p class="text-xs font-semibold text-brand uppercase tracking-widest">Passo 1 de 4</p><h2 class="text-2xl font-extrabold tracking-tight mt-1">Qual o serviço?</h2></div>
+        <div id="lista-servicos" class="space-y-3 mt-1"><div class="skel h-20 rounded-2xl"></div><div class="skel h-20 rounded-2xl"></div><div class="skel h-20 rounded-2xl"></div></div>
+        <button type="button" onclick="ir('tela-inicio','',0)" class="w-full text-sm text-zinc-300 hover:text-white py-3 min-h-11">← Voltar ao início</button>
+      </div>
+
+      <!-- 2: BARBEIRO -->
+      <div id="tela-barbeiro" class="tela hidden space-y-4">
+        <div><p class="text-xs font-semibold text-brand uppercase tracking-widest">Passo 2 de 4</p><h2 class="text-2xl font-extrabold tracking-tight mt-1">Escolha o Barbeiro</h2></div>
+        <div id="lista-barbeiros" class="grid grid-cols-2 gap-4"></div>
+        <button type="button" onclick="ir('tela-servico','Escolha o serviço desejado',1)" class="w-full text-sm text-zinc-400 hover:text-zinc-200 py-3 min-h-11">← Voltar</button>
+      </div>
+
+      <!-- 3: DATA + HORÁRIO -->
+      <div id="tela-horario" class="tela hidden space-y-4">
+        <div><p class="text-xs font-semibold text-brand uppercase tracking-widest">Passo 3 de 4</p><h2 class="text-2xl font-extrabold tracking-tight mt-1">Dia e Horário</h2></div>
+        <div id="grid-datas" class="flex gap-2 overflow-x-auto pb-2"></div>
+        <p class="text-xs text-zinc-500">Almoço, horários passados e ocupados ficam ocultos.</p>
+        <div class="grid grid-cols-3 gap-2" id="grid-horarios"></div>
+        <button type="button" onclick="voltarHorario()" class="w-full text-sm text-zinc-400 hover:text-zinc-200 py-3 min-h-11">← Voltar</button>
+      </div>
+
+      <!-- 4: DADOS -->
+      <div id="tela-dados" class="tela hidden space-y-4">
+        <div><p class="text-xs font-semibold text-brand uppercase tracking-widest">Passo 4 de 4</p><h2 class="text-2xl font-extrabold tracking-tight mt-1">Seus Dados</h2></div>
+        <div class="glass p-3 rounded-2xl text-xs space-y-1 text-zinc-300">
+          <p>Serviço: <span id="resumo-servico" class="font-medium text-brand"></span></p>
+          <p>Barbeiro: <span id="resumo-barbeiro" class="font-medium text-zinc-100"></span></p>
+          <p>Quando: <span id="resumo-horario" class="font-medium text-zinc-100"></span></p>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label for="nome-cliente" class="block text-xs text-zinc-400 mb-1">Seu Nome</label>
+            <input type="text" id="nome-cliente" autocomplete="name" placeholder="Nome completo" class="w-full glass rounded-lg p-3 text-base text-zinc-100 focus:outline-none focus:border-brand" />
+          </div>
+          <div>
+            <label for="whatsapp-cliente" class="block text-xs text-zinc-400 mb-1">WhatsApp</label>
+            <input type="tel" id="whatsapp-cliente" inputmode="tel" autocomplete="tel" placeholder="(21) 99999-9999" maxlength="15" class="w-full glass rounded-lg p-3 text-base text-zinc-100 focus:outline-none focus:border-brand" />
+          </div>
+          <div id="fidelidade-box" class="hidden glass rounded-2xl p-3 text-xs"></div>
+          <p id="erro-dados" class="hidden text-sm text-red-400"></p>
+          <button type="button" id="btn-concluir" onclick="finalizarAgendamento()" class="w-full btn-gold disabled:opacity-50 text-zinc-950 font-bold py-4 rounded-2xl shadow-lg transition text-sm uppercase tracking-wider mt-2">Concluir Agendamento</button>
+        </div>
+        <button type="button" onclick="ir('tela-horario','Escolha o Horário',3)" class="w-full text-sm text-zinc-400 hover:text-zinc-200 py-3 min-h-11">← Voltar</button>
+      </div>
+
+      <!-- MEUS AGENDAMENTOS -->
+      <div id="tela-meus" class="tela hidden space-y-4">
+        <h2 class="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Meus agendamentos</h2>
+        <input type="tel" id="meus-zap" inputmode="tel" autocomplete="tel" maxlength="15" placeholder="Seu WhatsApp (21) 99999-9999" class="w-full glass rounded-lg p-3 text-base text-zinc-100 focus:outline-none focus:border-brand" />
+        <button type="button" onclick="buscarMeus()" class="w-full btn-gold text-zinc-950 font-bold py-3 rounded-2xl text-sm uppercase tracking-wider">Ver meus horários</button>
+        <div id="lista-meus" class="space-y-2"></div>
+        <p class="text-xs text-zinc-500">Para remarcar, cancele e faça um novo agendamento.</p>
+        <button type="button" onclick="novoAgendamento()" class="w-full text-sm text-zinc-400 hover:text-zinc-200 py-3 min-h-11">← Voltar</button>
+      </div>
+
+      <!-- SUCESSO -->
+      <div id="tela-sucesso" class="tela hidden space-y-5 text-center">
+        <div class="pop mx-auto w-20 h-20 rounded-full bg-brand/10 border border-brand/40 flex items-center justify-center"><svg viewBox="0 0 24 24" class="w-10 h-10 text-brand" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path class="draw" d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <h2 id="sucesso-titulo" class="text-xl font-bold text-brand">Agendamento confirmado!</h2>
+        <div class="glass p-4 rounded-2xl text-sm space-y-1 text-zinc-300" id="sucesso-resumo"></div>
+        <button type="button" onclick="novoAgendamento()" class="w-full btn-gold text-zinc-950 font-bold py-4 rounded-2xl transition text-sm uppercase tracking-wider">Fazer novo agendamento</button>
+        <button type="button" onclick="abrirMeus()" class="w-full text-sm text-zinc-400 hover:text-zinc-200 py-3 min-h-11">Acompanhar / cancelar meus agendamentos</button>
+      </div>
+    </main>
+
+    <footer id="rodape" class="hidden text-center text-xs text-zinc-400 p-4">Mega Barba • Barbearia Tradicional • Cachambi, RJ<br /><button type="button" onclick="abrirMeus()" class="underline text-zinc-400 py-2">Meus agendamentos (ver ou cancelar)</button></footer>
+
+    <script>
+      // ====== CONFIGURAÇÃO (Supabase > Project Settings > API) ======
+      const SUPABASE_URL = "https://zutigpmlqstffoktmxfa.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_-B8ShszTtEQ1Zj3IiLulKQ_CtgJvWve";
+      const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      const FOTOS = { alexsandro: "fotos/alexsandro.webp", wallace: "fotos/wallace.webp" };
+      // Acha a foto pelo começo do nome (ignora acento e maiúscula): "Alex", "Alexsandro" ou "ALEXSANDRO" servem
+      function fotoDe(nome) {
+        const n = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        const k = Object.keys(FOTOS).find((c) => n.startsWith(c.slice(0, 4)));
+        return USAR_FOTOS && k ? FOTOS[k] : null;
+      }
+      // Foto redonda; se o arquivo não existir/falhar, troca sozinha pelo monograma com a inicial
+      function avatar(nome, tam, anel) {
+        const mono = `<div class="monograma ${tam} shrink-0 rounded-full flex items-center justify-center font-extrabold">${esc(nome[0])}</div>`;
+        const f = fotoDe(nome);
+        return f ? `<img src="${f}" alt="${esc(nome)}" class="${tam} shrink-0 rounded-full object-cover ${anel}" onerror="this.outerHTML=this.dataset.mono" data-mono="${esc(mono)}" />` : mono;
+      }
+      const HORAS = Array.from({ length: 21 }, (_, i) => { const m = 540 + i * 30; return String(Math.floor(m / 60)).padStart(2, "0") + ":" + (m % 60 ? "30" : "00"); });
+      const DIAS_A_FRENTE = 7;
+      const DIAS_FECHADOS = [0, 1]; // domingo e segunda (0 = domingo)
+      const SKEL = Array(3).fill('<div class="skel h-16 rounded-2xl"></div>').join("");
+      const USAR_FOTOS = true; // false = usa só a inicial do nome
+      const ICO = {
+        tesoura: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/>',
+        navalha: '<path d="M4 20 15 9"/><path d="M13 5l6 6-3 3-6-6z"/>',
+        combo: '<rect x="9" y="3" width="6" height="18" rx="3"/><path d="M9 8l6-3M9 13l6-3M9 18l6-3"/>',
+      };
+      const icone = (n) => `<svg viewBox="0 0 24 24" class="w-6 h-6 text-brand" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICO[n]}</svg>`;
+      let equipe = [], meus = [], tFid = null;
+      let st = { servico: null, barbeiro: null, data: null, hora: null };
+
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      const min = (h) => { const [a, b] = h.split(":"); return Number(a) * 60 + Number(b); };
+      const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      const dataBonita = (s) => new Date(s + "T00:00").toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" });
+
+      function ir(id, subtitulo, passo) {
+        const casa = id === "tela-inicio";
+        $("cabecalho").classList.toggle("hidden", casa);
+        $("tela-inicio").classList.toggle("hidden", !casa);
+        ["area-app", "rodape"].forEach((i) => $(i).classList.toggle("hidden", casa));
+        if (casa) scrollTo(0, 0);
+        $("fundo").classList.toggle("calmo", !casa);
+        document.querySelectorAll(".tela").forEach((e) => e.classList.add("hidden"));
+        $(id).classList.remove("hidden");
+        $("subtitulo-topo").textContent = subtitulo;
+        $("barra").style.width = passo * 25 + "%";
+      }
+
+      async function iniciar() {
+        if (SUPABASE_URL.includes("SEU-PROJETO") || SUPABASE_KEY.includes("SUA_ANON")) {
+          $("lista-servicos").innerHTML = '<p class="text-sm text-red-400">Falta configurar o SUPABASE_URL e o SUPABASE_KEY no topo do script.</p>';
+          return;
+        }
+        const [s, b] = await Promise.all([
+          db.from("servicos").select("*").order("ordem"),
+          db.rpc("listar_barbeiros"),
+        ]);
+        if (s.error || b.error) {
+          const e = s.error || b.error; console.error(e);
+          $("lista-servicos").innerHTML = `<p class="text-sm text-red-400">Não foi possível carregar os dados.</p><p class="text-xs text-zinc-500 mt-2 break-words">${esc(e.message)}</p>`;
+          return;
+        }
+        $("lista-servicos").innerHTML = ""; $("servicos-home").innerHTML = "";
+        s.data.forEach((x) => {
+          const d = document.createElement("div");
+          const ico = icone(/combo/i.test(x.nome) ? "combo" : /barba/i.test(x.nome) ? "navalha" : "tesoura");
+          d.className = "glass card rounded-2xl p-4 cursor-pointer flex items-center gap-4";
+          d.innerHTML = `<div class="w-12 h-12 shrink-0 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center ">${ico}</div><div class="flex-1 min-w-0"><p class="font-semibold">${esc(x.nome)}</p><p class="text-xs text-zinc-400">${esc(x.descricao || "")}</p><span class="chip mt-1.5">${Number(x.duracao)} min</span></div><span class="text-brand font-extrabold text-xl">R$ ${Number(x.preco)}</span>`;
+          d.onclick = () => { st.servico = x; ir("tela-barbeiro", `Barbeiro para ${x.nome}`, 2); };
+          $("lista-servicos").appendChild(d);
+          const d2 = d.cloneNode(true); d2.onclick = d.onclick; $("servicos-home").appendChild(d2);
+        });
+        equipe = b.data;
+        $("equipe-home").innerHTML = b.data.map((x) => `<div class="liquid rounded-3xl p-5 flex items-center gap-4">${avatar(x.nome, "w-16 h-16 text-xl", "ring-2 ring-white/30")}<div><p class="font-semibold">${esc(x.nome)}</p><p class="text-xs text-zinc-400">Barbeiro • ${esc(x.turno_inicio)} às ${esc(x.turno_fim)}</p></div></div>`).join("");
+        b.data.forEach((x) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "glass card rounded-2xl p-5 text-center flex flex-col items-center gap-1.5";
+          btn.innerHTML = `${avatar(x.nome, "w-24 h-24 text-4xl", "ring-2 ring-brand/70 ring-offset-2 ring-offset-zinc-950")}<span class="font-bold text-lg mt-1">${esc(x.nome)}</span><span class="text-xs text-zinc-400">Barbeiro</span>`;
+          btn.onclick = () => escolherBarbeiro(x);
+          $("lista-barbeiros").appendChild(btn);
+        });
+      }
+
+      function escolherBarbeiro(b) {
+        st.barbeiro = b;
+        const grid = $("grid-datas");
+        grid.innerHTML = "";
+        let abertos = 0, primeira = null;
+        for (let i = 0; i < 14 && abertos < DIAS_A_FRENTE; i++) {
+          const d = new Date(); d.setDate(d.getDate() + i);
+          if (DIAS_FECHADOS.includes(d.getDay())) continue;
+          abertos++;
+          const valor = iso(d);
+          if (!primeira) primeira = valor;
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.dataset.data = valor;
+          btn.className = "shrink-0 px-3 py-2 rounded-lg border text-xs font-medium min-h-11 transition";
+          btn.textContent = i === 0 ? "Hoje" : dataBonita(valor);
+          btn.onclick = () => selecionarData(valor);
+          grid.appendChild(btn);
+        }
+        ir("tela-horario", `Horários com ${b.nome}`, 3);
+        selecionarData(primeira);
+      }
+
+      function selecionarData(valor) {
+        st.data = valor;
+        document.querySelectorAll("#grid-datas button").forEach((b) => {
+          const ativo = b.dataset.data === valor;
+          b.className = b.className.replace(/border-\S+|bg-\S+|text-brand|text-zinc-\S+/g, "").trim() +
+            (ativo ? " border-brand bg-brand/10 text-brand" : " border-zinc-800 bg-zinc-900 text-zinc-300");
+        });
+        carregarHorarios();
+      }
+
+      async function carregarHorarios() {
+        const grid = $("grid-horarios");
+        grid.innerHTML = Array(9).fill('<div class="skel h-11 rounded-xl"></div>').join("");
+        const { data: ocupados, error } = await db.rpc("ocupacao", { p_barbeiro: st.barbeiro.id, p_data: st.data });
+        if (error) { grid.innerHTML = '<p class="col-span-3 text-sm text-red-400">Erro ao carregar. Tente outro dia.</p>'; return; }
+        if (ocupados.some((o) => o.i === 0 && o.f === 1440)) { grid.innerHTML = '<p class="col-span-3 text-sm text-zinc-400 text-center py-4">Sem atendimento neste dia. Escolha outro dia acima.</p>'; return; }
+
+        const b = st.barbeiro, agora = new Date();
+        let oc = ocupados;  // ao remarcar, o próprio horário atual conta como livre
+        if (st.remarcando && st.remarcando.data === st.data) { const i0 = min(st.remarcando.hora); oc = oc.filter((o) => !(o.i === i0 && o.f === i0 + st.remarcando.duracao)); }
+        const hoje = st.data === iso(agora), agoraMin = agora.getHours() * 60 + agora.getMinutes();
+        const livres = HORAS.filter((h) => {
+          const m = min(h), f = m + Number(st.servico.duracao);
+          const choca = (i, j) => m < j && f > i;
+          return m >= min(b.turno_inicio) && f <= min(b.turno_fim) && !choca(min(b.almoco_inicio), min(b.almoco_fim)) &&
+            !oc.some((o) => choca(o.i, o.f)) && !(hoje && m <= agoraMin);
+        });
+
+        grid.innerHTML = "";
+        if (!livres.length) {
+          grid.innerHTML = '<p class="col-span-3 text-sm text-zinc-400 text-center py-4">Sem horários livres neste dia. Escolha outro dia acima.</p>';
+          return;
+        }
+        livres.forEach((h) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = h;
+          btn.className = "p-3 min-h-11 rounded-lg glass text-zinc-200 text-sm font-medium hover:border-brand hover:bg-brand/10 hover:text-brand transition";
+          btn.onclick = () => selecionarHorario(h);
+          grid.appendChild(btn);
+        });
+      }
+
+      function selecionarHorario(h) {
+        st.hora = h;
+        if (st.remarcando) return confirmarRemarcacao();
+        st.gratis = false; $("fidelidade-box").classList.add("hidden"); atualizarResumo();
+        $("resumo-barbeiro").textContent = st.barbeiro.nome;
+        $("resumo-horario").textContent = `${dataBonita(st.data)} às ${h}h`;
+        $("erro-dados").classList.add("hidden");
+        try {
+          const c = JSON.parse(localStorage.getItem("cliente") || "{}");
+          if (c.nome && !$("nome-cliente").value) $("nome-cliente").value = c.nome;
+          if (c.zap && !$("whatsapp-cliente").value) { $("whatsapp-cliente").value = c.zap; $("whatsapp-cliente").dispatchEvent(new Event("input")); }
+        } catch (e) {}
+        ir("tela-dados", "Preencha seus dados", 4);
+      }
+
+      ["whatsapp-cliente", "meus-zap"].forEach((id) => $(id).addEventListener("input", (e) => {
+        let n = e.target.value.replace(/\D/g, "").slice(0, 11), f = n;
+        if (n.length > 6) f = `(${n.slice(0, 2)}) ${n.slice(2, n.length === 11 ? 7 : 6)}-${n.slice(n.length === 11 ? 7 : 6)}`;
+        else if (n.length > 2) f = `(${n.slice(0, 2)}) ${n.slice(2)}`;
+        e.target.value = f;
+      }));
+
+      function mostrarErro(msg) { const e = $("erro-dados"); e.textContent = msg; e.classList.remove("hidden"); }
+
+      async function finalizarAgendamento() {
+        const nome = $("nome-cliente").value.trim();
+        const zap = $("whatsapp-cliente").value.replace(/\D/g, "");
+        if (nome.length < 2) return mostrarErro("Digite seu nome.");
+        if (zap.length < 10 || zap.length > 11) return mostrarErro("Digite um WhatsApp válido com DDD.");
+
+        const btn = $("btn-concluir");
+        btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Reservando...';
+        const { error } = await db.rpc("criar_agendamento", {
+          p_barbeiro: st.barbeiro.id, p_data: st.data, p_hora: st.hora,
+          p_servico: st.servico.nome, p_nome: nome, p_whatsapp: zap,
+        });
+        btn.disabled = false; btn.textContent = "Concluir Agendamento";
+
+        if (error) {
+          if (error.message.includes("HORARIO_OCUPADO")) {
+            ir("tela-horario", "Horário indisponível, escolha outro", 3);
+            carregarHorarios();
+            return;
+          }
+          return mostrarErro("Não foi possível agendar. Tente novamente.");
+        }
+        try { localStorage.setItem("cliente", JSON.stringify({ nome, zap: $("whatsapp-cliente").value })); } catch (e) {}
+        $("sucesso-resumo").innerHTML = `<p>Cliente: <b>${esc(nome)}</b></p><p>Serviço: ${esc(st.servico.nome)}</p><p>Barbeiro: ${esc(st.barbeiro.nome)}</p><p>Quando: ${esc(dataBonita(st.data))} às ${esc(st.hora)}h</p>${st.gratis ? '<p class="text-brand font-bold mt-1">Brinde de fidelidade aplicado!</p>' : ""}`;
+        $("sucesso-titulo").textContent = "Agendamento confirmado!";
+        ir("tela-sucesso", "Tudo certo!", 4);
+      }
+
+      function novoAgendamento() {
+        st = { servico: null, barbeiro: null, data: null, hora: null };
+        $("nome-cliente").value = ""; $("whatsapp-cliente").value = "";
+        ir("tela-inicio", "", 0);
+      }
+
+      function abrirMeus() {
+        try { const c = JSON.parse(localStorage.getItem("cliente") || "{}"); if (c.zap) $("meus-zap").value = c.zap; } catch (e) {}
+        $("lista-meus").innerHTML = "";
+        ir("tela-meus", "Meus agendamentos", 1);
+      }
+
+      async function buscarMeus() {
+        const z = $("meus-zap").value.replace(/\D/g, ""), l = $("lista-meus");
+        if (z.length < 10) { l.innerHTML = '<p class="text-sm text-red-400">Digite o WhatsApp com DDD.</p>'; return; }
+        l.innerHTML = SKEL;
+        const [m, f] = await Promise.all([db.rpc("meus_agendamentos", { p_whatsapp: z }), db.rpc("fidelidade", { p_whatsapp: z })]);
+        if (m.error) { l.innerHTML = '<p class="text-sm text-red-400">Erro ao buscar. Tente novamente.</p>'; return; }
+        meus = m.data;
+        const cartaoHtml = f.data ? `<div class="glass rounded-2xl p-4 text-xs"><p class="kpi-l mb-2">Cartão fidelidade</p>${cartao(f.data)}</div>` : "";
+        const lista = meus.length ? meus.map((a) => `<div class="glass rounded-2xl p-3 flex items-center justify-between gap-2"><div class="text-sm"><p class="font-semibold">${esc(dataBonita(a.data))} às ${esc(a.hora)}h</p><p class="text-xs text-zinc-400">${esc(a.servico)} • ${esc(a.barbeiro)}${a.brinde ? " • Brinde" : ""}</p></div><div class="flex gap-2"><button type="button" onclick="remarcar('${esc(a.id)}')" class="text-xs min-h-11 bg-brand/10 text-brand border border-brand/30 px-3 rounded-xl">Remarcar</button><button type="button" onclick="cancelarMeu('${esc(a.id)}')" class="text-xs min-h-11 bg-red-500/10 text-red-400 border border-red-500/20 px-3 rounded-xl">Cancelar</button></div></div>`).join("") : '<p class="text-sm text-zinc-400">Nenhum agendamento futuro encontrado.</p>';
+        l.innerHTML = cartaoHtml + lista;
+      }
+
+      // ---- Fidelidade: selos do cartão e preço grátis no resumo ----
+      function cartao(f) {
+        const selos = Array.from({ length: 10 }, (_, i) => `<span class="stamp ${i < f.feitos ? "on" : ""}"></span>`).join("");
+        const msg = f.gratis ? '<p class="mt-2 text-brand font-bold">Seu próximo serviço é por conta da casa!</p>'
+          : `<p class="mt-2 text-zinc-300">Faltam <b class="text-brand">${f.faltam}</b> serviço(s) concluído(s) para ganhar um brinde.</p>`;
+        return `<div class="flex gap-1.5 flex-wrap">${selos}</div>${msg}`;
+      }
+      function atualizarResumo() {
+        $("resumo-servico").textContent = st.servico.nome + (st.gratis ? " (GRÁTIS)" : ` (R$ ${Number(st.servico.preco)})`);
+      }
+      async function checarFidelidade() {
+        const z = $("whatsapp-cliente").value.replace(/\D/g, ""), box = $("fidelidade-box");
+        if (z.length < 10) { box.classList.add("hidden"); st.gratis = false; atualizarResumo(); return; }
+        const { data } = await db.rpc("fidelidade", { p_whatsapp: z });
+        if (!data) return;
+        st.gratis = data.gratis; atualizarResumo();
+        box.innerHTML = cartao(data); box.classList.remove("hidden");
+      }
+      $("whatsapp-cliente").addEventListener("input", () => { clearTimeout(tFid); tFid = setTimeout(checarFidelidade, 400); });
+
+      // ---- Remarcar: reaproveita a tela de horários com o mesmo serviço e barbeiro ----
+      function remarcar(id) {
+        const a = meus.find((x) => x.id === id), b = a && equipe.find((x) => x.id === a.barbeiro_id);
+        if (!b) return;
+        st.servico = { nome: a.servico, duracao: a.duracao, preco: a.valor };
+        st.remarcando = a;
+        escolherBarbeiro(b);
+      }
+      function voltarHorario() {
+        if (st.remarcando) { st.remarcando = null; abrirMeus(); buscarMeus(); }
+        else ir("tela-barbeiro", "Escolha o Barbeiro", 2);
+      }
+      async function confirmarRemarcacao() {
+        const a = st.remarcando;
+        const { error } = await db.rpc("remarcar_meu", { p_id: a.id, p_whatsapp: $("meus-zap").value.replace(/\D/g, ""), p_data: st.data, p_hora: st.hora });
+        if (error) {
+          if (error.message.includes("HORARIO_OCUPADO")) { carregarHorarios(); return; }
+          alert("Não foi possível remarcar. Tente novamente."); return;
+        }
+        st.remarcando = null;
+        $("sucesso-titulo").textContent = "Agendamento remarcado!";
+        $("sucesso-resumo").innerHTML = `<p>Serviço: ${esc(a.servico)}</p><p>Barbeiro: ${esc(st.barbeiro.nome)}</p><p>Quando: ${esc(dataBonita(st.data))} às ${esc(st.hora)}h</p>`;
+        ir("tela-sucesso", "Tudo certo!", 4);
+      }
+
+      async function cancelarMeu(id) {
+        if (!confirm("Cancelar este agendamento?")) return;
+        await db.rpc("cancelar_meu", { p_id: id, p_whatsapp: $("meus-zap").value.replace(/\D/g, "") });
+        buscarMeus();
+      }
+
+      // ---- Efeitos: letras do título, revelar ao rolar, paralaxe, brilho que segue o dedo/mouse ----
+      document.querySelectorAll("[data-split]").forEach((el) => {
+        el.innerHTML = [...el.textContent].map((c, i) => `<span class="ch" style="animation-delay:${0.3 + i * 0.07}s">${c === " " ? "&nbsp;" : c}</span>`).join("");
+      });
+      document.querySelectorAll("[data-words]").forEach((el) => {   // frase de efeito: palavra por palavra, com as 2 últimas em destaque
+        const p = el.textContent.trim().split(" ");
+        el.innerHTML = p.map((w, i) => `<span class="w${i >= p.length - 2 ? " dest" : ""}" style="animation-delay:${1 + i * 0.12}s">${w}</span>`).join(" ");
+      });
+      const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("in")), { threshold: 0.15 });
+      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+      window.addEventListener("pointermove", (e) => {
+        const casa = $("tela-inicio");
+        casa.style.setProperty("--px", (e.clientX / innerWidth - 0.5) * 2);
+        casa.style.setProperty("--py", (e.clientY / innerHeight - 0.5) * 2);
+        const l = e.target.closest && e.target.closest(".liquid, .glass");
+        if (l) { const r = l.getBoundingClientRect(); l.style.setProperty("--mx", e.clientX - r.left + "px"); l.style.setProperty("--my", e.clientY - r.top + "px"); }
+      });
+
+      // ---- PWA: botão "Instalar app" (Android/Chrome) e dica para iPhone ----
+      let promptInstalar = null;
+      window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); promptInstalar = e; $("btn-instalar").classList.remove("hidden"); });
+      $("btn-instalar").onclick = async () => { if (!promptInstalar) return; promptInstalar.prompt(); await promptInstalar.userChoice; promptInstalar = null; $("btn-instalar").classList.add("hidden"); };
+      if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone) $("dica-ios").classList.remove("hidden");
+      if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
+      iniciar();
+    </script>
+  </body>
+</html>
